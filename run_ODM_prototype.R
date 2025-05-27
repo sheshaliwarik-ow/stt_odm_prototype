@@ -1,5 +1,5 @@
-library (dplyr)
-library (haven)
+library(dplyr)
+library(haven)
 library(ggplot2)
 library(tidyr)
 library(lubridate) 
@@ -51,30 +51,60 @@ data_preprocessing <- function(merged_dataframe, CDMS_mapping, unique_dates) {
   return(list(raw_data_consol = raw_data_consol, raw_data_last = raw_data_last))
 }
 
-
 result <- data_preprocessing(merged_dataframe, CDMS_mapping, unique_dates)
 
 # Access the results
 raw_data_consol <- consolidate_rows(result$raw_data_consol)
 raw_data_last <- consolidate_rows(result$raw_data_last)
+
 -----------------------------------------------------------------------------------------
 source("C:/Users/chenqin.pan/Documents/GitHub/stt_odm_prototype/operational_balance_functions.R")
 
-baseline_ob <- calculate_operational_balance (
+baseline_ob_v1 <- calculate_operational_balance (
   raw_data_consol,
   short_lookback = 3,
   long_lookback = 12,
   cap = 1,
   n = 2,
+  eligibility_months = 3,
   start_date = "2020-01-01",
   end_date = "2025-3-28"
 )
 
+<<<<<<< HEAD
+baseline_daily_v1 <- summarize_daily_operational_balance (baseline_ob_v1)
+#write.csv(baseline_daily_v1, "baseline_daily_v1.csv", row.names = FALSE)
+
+
+baseline_ob_v2 <- calculate_operational_balance_v2 (
+    raw_data_consol,
+    Balance_Cushion_Multiplier = 2,  
+    Payment_Cushion_Multiplier = 2, 
+    cash_management_horizon = 1,       
+    choice = 0,                       
+    BLB = 6,                           
+    PLB = 6,                           
+    Balance_Percentile = 85,         
+    Payment_Percentile = 95,         
+    smoothing = 1,                     
+    adjustment_factor = 1,   
+    eligibility_months = 3,
+    start_date = "2020-01-01",
+    end_date = "2025-3-28"
+)
+
+baseline_daily_v2 <- summarize_daily_operational_balance (baseline_ob_v2)
+#write.csv(baseline_daily_v2, "baseline_daily_v2.csv", row.names = FALSE)
+
+-------------------------------------------------------------------------------
+source('existing_ODM_analysis_functions.R')
+=======
 baseline_daily <- summarize_daily_operational_balance (baseline_ob)
 write.csv(baseline_daily, "C:\\Users\\chenqin.pan\\Downloads\\baseline_daily_CP.csv", row.names = FALSE)
 -----------------------------------------------------
   
 source("C:/Users/chenqin.pan/Documents/GitHub/stt_odm_prototype/exploratory_analysis_functions.R")
+>>>>>>> origin
 
 # check differences in the total principal balance between the old model result and new model result 
 
@@ -561,6 +591,45 @@ source("C:/Users/chenqin.pan/Documents/GitHub/stt_odm_prototype/existing_ODM_ana
 
 existing_ODM_results_path = "C:\\Users\\chenqin.pan\\Downloads\\odm_up_bal_2020_2025.sas7bdat"
 existing_ODM_results <- read_sas(existing_ODM_results_path)
+<<<<<<< HEAD
+
+intra_daily_ob_v1 <- process_operational_balances_with_behavioral_groups(
+  existing_ODM_results, 
+  baseline_ob_v1, 
+  '2025-03-31', 
+  'INTRA-DAY',
+  'CONSOL'
+)
+
+intra_ob_v1 <- calculate_daily_totals(intra_daily_ob_v1)
+write.csv(intra_ob_v1, "INTRA_ob_v1.csv", row.names = FALSE)
+
+mdl_daily_ob_v1 <- process_operational_balances_with_behavioral_groups(
+  existing_ODM_results, 
+  baseline_ob_v1, 
+  '2025-03-31', 
+  'Multi-Day Low',
+  'CONSOL'
+)
+
+mdl_ob_v1 <- calculate_daily_totals(mdl_daily_ob_v1)
+write.csv(mdl_ob_v1, "MDL_ob_v1.csv", row.names = FALSE)
+
+mdh_daily_ob_v1 <- process_operational_balances_with_behavioral_groups(
+  existing_ODM_results, 
+  baseline_ob_v1, 
+  '2025-03-31', 
+  'Multi-Day High',
+  'CONSOL'
+)
+
+mdh_ob_v1 <- calculate_daily_totals(mdh_daily_ob_v1)
+write.csv(mdh_ob_v1, "MDH_ob_v1.csv", row.names = FALSE)
+
+------------------------------------------------------------------------------------------
+
+## Daily Analysis
+=======
 View(existing_ODM_results)  
   
 
@@ -704,3 +773,4 @@ View(reported_daily_before_mapping_and_bridging)
 raw_daily  <-consolidate_rows_raw(raw_data_consol)
 
 
+>>>>>>> origin
